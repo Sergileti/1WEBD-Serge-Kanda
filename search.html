@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CinemaTor - Recherche de films</title>
+    <link rel="stylesheet" href="CSS/search.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <header>
+        <div class="header-container">
+            <h1><a href="index.html">Cinema<span style="color: #e50914">Tor</span></a></h1>
+            <nav>
+                <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
+                <a href="search.html" class="active"><i class="fas fa-search"></i> Recherche</a>
+            </nav>
+        </div>
+    </header>
+
+    
+    <main>
+        
+        <section class="hero-section">
+            <div class="hero-content">
+                <h2>Rechercher des films</h2>
+                <p>Trouvez vos films préférés en quelques secondes</p>
+                
+                
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input 
+                            type="text" 
+                            id="search-input" 
+                            placeholder="Rechercher un film (ex: Inception, Avatar...)" 
+                            autocomplete="off"
+                        >
+                        <button id="clear-search" class="clear-btn" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+        <section class="results-section">
+            <div class="section-header">
+                <h3 id="results-title">Recherche récente</h3>
+                <div class="results-count" id="results-count"></div>
+            </div>
+            
+            
+            <div id="search-results" class="films-container">
+                
+                <div class="no-results">
+                    <i class="fas fa-film"></i>
+                    <h4>Commencez votre recherche</h4>
+                    <p>Utilisez la barre de recherche ci-dessus pour trouver des films</p>
+                </div>
+            </div>
+            
+            
+            <div class="btn-container" id="load-more-container" style="display: none;">
+                <button id="btn-load-more" class="btn-load-more">
+                    <i class="fas fa-plus"></i> Charger plus de résultats
+                </button>
+            </div>
+        </section>
+    </main>
+
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
+                <a href="search.html"><i class="fas fa-search"></i> Recherche</a>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 CinemaTor</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        ////// Configuration TMDB
+        window.TMDB_API_KEY = '90b0196ccc5268645d270095b394a5b6';
+        window.TMDB_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5MGIwMTk2Y2NjNTI2ODY0NWQyNzAwOTViMzk0YTViNiIsIm5iZiI6MTc2NTM1NTM2NC4zNTIsInN1YiI6IjY5MzkyZjY0ZDNhNTYxMGMyYjEzNGMxOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.CmmGG6ereMWpDbFfH1JXfJWsozIfAqcrTQLd9KxufeI';
+    </script>
+    <script src="JS/search.js"></script>
+</body>
+</html>

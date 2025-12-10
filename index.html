@@ -3,37 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CinemaTor</title>
+    <title>CinemaTor - Films Tendance & 2024</title>
     <link rel="stylesheet" href="CSS/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <header>
-        <h1>Films en Tendance</h1>
-        <p>Découvrez les films les plus populaires du moment</p>
+        <h1>Cinema<span style="color: #e50914">Tor</span></h1>
+        <p>Découvrez les films les plus populaires</p>
     </header>
 
     <main>
-        <section class="section-2024">
-            <h2>Films de 2024</h2>
+        <section>
+            <h2 class="section-title">Films Populaires</h2>
+            <p style="color: #b3b3b3; margin-bottom: 20px; text-align: center;">
+                Choisissez entre les films tendance du moment ou les films sortis en 2024.
+            </p>
+            
+            
             <div id="movies-2024" class="films-container">
-                <p>Chargement des films de 2024...</p>
             </div>
             
             <div class="btn-container">
-                <button id="btn-charger-plus" class="btn-charger-plus">
-                    Charger plus de films
+                <button id="btn-charger-plus" class="btn-charger">
+                    <i class="fas fa-plus"></i> Charger plus de films
                 </button>
             </div>
         </section>
     </main>
 
     <footer>
-        <p>Copryright 2025</p>
+        <div class="footer-links">
+            <a href="#"><i class="fas fa-home"></i> Accueil</a>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 CinemaTor</p>
+        </div>
     </footer>
 
-    <script>
-        window.API_KEY = '327d1fbe';
-    </script>
     <script src="JS/index.js"></script>
 </body>
 </html>
