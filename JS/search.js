@@ -237,7 +237,7 @@ btnLoadMore.addEventListener('click', async function() {
 });
 
 window.onload = function() {
-    console.log("🔍 Page de recherche CinemaTor");
+    console.log("Page de recherche CinemaTor");
     showInitialState();
     
     searchInput.focus();
