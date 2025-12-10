@@ -1,244 +1,281 @@
-const tmdbConfig = {
-    apiKey: window.TMDB_API_KEY,
-    accessToken: window.TMDB_TOKEN,
-    baseUrl: 'https://api.themoviedb.org/3',
-    imageBaseUrl: 'https://image.tmdb.org/t/p/w500',
-    language: 'fr-FR'
-};
+const TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5MGIwMTk2Y2NjNTI2ODY0NWQyNzAwOTViMzk0YTViNiIsIm5iZiI6MTc2NTM1NTM2NC4zNTIsInN1YiI6IjY5MzkyZjY0ZDNhNTYxMGMyYjEzNGMxOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.CmmGG6ereMWpDbFfH1JXfJWsozIfAqcrTQLd9KxufeI';
+
 
 const searchInput = document.getElementById('search-input');
 const clearBtn = document.getElementById('clear-search');
-const searchResults = document.getElementById('search-results');
-const resultsTitle = document.getElementById('results-title');
-const resultsCount = document.getElementById('results-count');
-const btnLoadMore = document.getElementById('btn-load-more');
+const resultsDiv = document.getElementById('search-results');
+const titleElement = document.getElementById('results-title');
+const countElement = document.getElementById('results-count');
+const loadMoreBtn = document.getElementById('btn-load-more');
 const loadMoreContainer = document.getElementById('load-more-container');
 
-let currentSearchTerm = '';
-let currentPage = 1;
-let totalPages = 1;
-let totalResults = 0;
-let isLoading = false;
-let searchTimeout = null;
 
-const fetchOptions = {
-    method: 'GET',
-    headers: {
-        'Authorization': `Bearer ${tmdbConfig.accessToken}`,
-        'Content-Type': 'application/json'
-    }
-};
+let currentSearch = '';
+let pageNumber = 1;
+let totalMovies = 0;
+let searching = false;
+let timer = null;
 
-async function searchMovies(query, page = 1) {
-    if (!query.trim()) {
-        showInitialState();
-        return { results: [], total_pages: 1, total_results: 0 };
-    }
+async function findMovies(searchText, page = 1) {
+    if (!searchText) return [];
     
     try {
-        const url = `${tmdbConfig.baseUrl}/search/movie?query=${encodeURIComponent(query)}&language=${tmdbConfig.language}&page=${page}`;
+        const url = `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(searchText)}&language=fr-FR&page=${page}`;
         
-        const response = await fetch(url, fetchOptions);
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${TOKEN}`,
+                'Content-Type': 'application/json'
+            }
+        });
         
-        if (!response.ok) {
-            throw new Error(`Erreur: ${response.status}`);
+        const data = await response.json();
+        
+        if (page === 1) {
+            totalMovies = data.total_results || 0;
         }
         
-        return await response.json();
+        return data.results || [];
         
     } catch (error) {
-        console.error("Erreur recherche:", error);
-        showError("Erreur de recherche");
-        return { results: [], total_pages: 1, total_results: 0 };
+        console.log('Erreur:', error);
+        return [];
     }
 }
 
-function showInitialState() {
-    searchResults.innerHTML = `
-        <div class="no-results">
-            <i class="fas fa-film"></i>
-            <h4>Commencez votre recherche</h4>
-            <p>Utilisez la barre de recherche ci-dessus pour trouver des films</p>
-        </div>
-    `;
-    resultsTitle.textContent = 'Recherche récente';
-    resultsCount.textContent = '';
+function makeMovieElement(movie) {
+    const movieDiv = document.createElement('div');
+    movieDiv.className = 'film-card';
+    
+    const img = document.createElement('img');
+    img.className = 'film-poster';
+    img.alt = movie.title;
+    
+    if (movie.poster_path) {
+        img.src = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+    } else {
+        img.src = 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=200&h=300&fit=crop';
+    }
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'film-overlay';
+    
+    const info = document.createElement('div');
+    info.className = 'film-info';
+    
+    const title = document.createElement('h3');
+    title.className = 'film-title';
+    title.textContent = movie.title;
+    
+    const meta = document.createElement('div');
+    meta.className = 'film-meta';
+    
+    const year = document.createElement('span');
+    year.textContent = movie.release_date ? movie.release_date.substring(0, 4) : 'N/A';
+    
+    const rating = document.createElement('span');
+    rating.textContent = `⭐ ${movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'}/10`;
+    
+    meta.appendChild(year);
+    meta.appendChild(rating);
+    
+    const plot = document.createElement('p');
+    plot.className = 'film-plot';
+    
+    let description = movie.overview || 'Pas de description disponible';
+    if (description.length > 100) {
+        description = description.substring(0, 100) + '...';
+    }
+    plot.textContent = description;
+    
+    const link = document.createElement('a');
+    link.className = 'film-link';
+    link.href = `movie.html?id=${movie.id}`;
+    
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-play';
+    
+    link.appendChild(icon);
+    link.appendChild(document.createTextNode(' Voir détails'));
+    
+    info.appendChild(title);
+    info.appendChild(meta);
+    info.appendChild(plot);
+    info.appendChild(link);
+    
+    overlay.appendChild(info);
+    
+    movieDiv.appendChild(img);
+    movieDiv.appendChild(overlay);
+    
+    return movieDiv;
+}
+
+function showStart() {
+    resultsDiv.innerHTML = '';
+    titleElement.textContent = 'Recherche récente';
+    countElement.textContent = '';
+    loadMoreContainer.style.display = 'none';
+    
+    const noResults = document.createElement('div');
+    noResults.className = 'no-results';
+    
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-film';
+    
+    const title = document.createElement('h4');
+    title.textContent = 'Commencez votre recherche';
+    
+    const text = document.createElement('p');
+    text.textContent = 'Utilisez la barre de recherche ci-dessus pour trouver des films';
+    
+    noResults.appendChild(icon);
+    noResults.appendChild(title);
+    noResults.appendChild(text);
+    
+    resultsDiv.appendChild(noResults);
+}
+
+function showLoading() {
+    resultsDiv.innerHTML = '';
+    
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'loading-results';
+    
+    const spinner = document.createElement('div');
+    spinner.className = 'loading-spinner';
+    
+    const spinnerIcon = document.createElement('i');
+    spinnerIcon.className = 'fas fa-spinner fa-spin';
+    
+    const text = document.createElement('p');
+    text.className = 'loading-text';
+    text.textContent = 'Recherche en cours...';
+    
+    spinner.appendChild(spinnerIcon);
+    loadingDiv.appendChild(spinner);
+    loadingDiv.appendChild(text);
+    
+    resultsDiv.appendChild(loadingDiv);
+}
+
+function showEmpty() {
+    resultsDiv.innerHTML = '';
+    
+    const emptyDiv = document.createElement('div');
+    emptyDiv.className = 'no-results';
+    
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-search';
+    
+    const title = document.createElement('h4');
+    title.textContent = 'Aucun résultat trouvé';
+    
+    const text = document.createElement('p');
+    text.textContent = 'Essayez avec d\'autres mots-clés';
+    
+    emptyDiv.appendChild(icon);
+    emptyDiv.appendChild(title);
+    emptyDiv.appendChild(text);
+    
+    resultsDiv.appendChild(emptyDiv);
     loadMoreContainer.style.display = 'none';
 }
 
-function displayResults(movies, isNewSearch = true) {
+function showResults(movies, isNewSearch = true) {
     if (isNewSearch) {
-        searchResults.innerHTML = '';
+        resultsDiv.innerHTML = '';
     }
     
     if (movies.length === 0) {
-        searchResults.innerHTML = `
-            <div class="no-results">
-                <i class="fas fa-search"></i>
-                <h4>Aucun résultat trouvé</h4>
-                <p>Essayez avec d'autres mots-clés</p>
-            </div>
-        `;
-        loadMoreContainer.style.display = 'none';
+        showEmpty();
         return;
     }
     
-    movies.forEach((movie, index) => {
-        const filmCard = createFilmCard(movie);
-        searchResults.appendChild(filmCard);
-        
-        setTimeout(() => {
-            filmCard.style.opacity = '1';
-            filmCard.style.transform = 'translateY(0)';
-        }, index * 50);
+    movies.forEach(movie => {
+        const movieElement = makeMovieElement(movie);
+        resultsDiv.appendChild(movieElement);
     });
     
-    resultsTitle.textContent = `Résultats pour "${currentSearchTerm}"`;
-    resultsCount.textContent = `${totalResults} films trouvés`;
+    titleElement.textContent = `Résultats pour "${currentSearch}"`;
+    countElement.textContent = `${totalMovies} films trouvés`;
     
-    if (currentPage < totalPages) {
+    if (movies.length >= 20) {
         loadMoreContainer.style.display = 'block';
     } else {
         loadMoreContainer.style.display = 'none';
     }
 }
 
-function createFilmCard(movie) {
-    const card = document.createElement('div');
-    card.className = 'film-card';
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    card.style.transition = 'opacity 0.3s, transform 0.3s';
-    
-    const posterUrl = movie.poster_path 
-        ? `${tmdbConfig.imageBaseUrl}${movie.poster_path}`
-        : 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=300&h=450&fit=crop&auto=format';
-    
-    const year = movie.release_date ? movie.release_date.substring(0, 4) : 'N/A';
-    const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
-    
-    card.innerHTML = `
-        <img src="${posterUrl}" alt="${movie.title}" class="film-poster" loading="lazy">
-        <div class="film-overlay">
-            <div class="film-info">
-                <h3 class="film-title">${movie.title}</h3>
-                <div class="film-meta">
-                    <span>${year}</span>
-                    <span>⭐ ${rating}/10</span>
-                </div>
-                <a href="movie.html?id=${movie.id}" class="film-link">
-                    <i class="fas fa-play"></i> Voir détails
-                </a>
-            </div>
-        </div>
-    `;
-    
-    return card;
-}
-
-function showLoading() {
-    searchResults.innerHTML = `
-        <div class="loading-results">
-            <div class="loading-spinner">
-                <i class="fas fa-spinner fa-spin"></i>
-            </div>
-            <p class="loading-text">Recherche en cours...</p>
-        </div>
-    `;
-}
-
-function showError(message) {
-    searchResults.innerHTML = `
-        <div class="error-message">
-            <i class="fas fa-exclamation-triangle"></i>
-            <p>${message}</p>
-        </div>
-    `;
-    loadMoreContainer.style.display = 'none';
-}
-
-async function performSearch(isNewSearch = true) {
-    if (!currentSearchTerm.trim()) {
-        showInitialState();
+async function doSearch(isNewSearch = true) {
+    if (!currentSearch) {
+        showStart();
         return;
     }
     
     if (isNewSearch) {
-        currentPage = 1;
+        pageNumber = 1;
         showLoading();
     }
     
-    isLoading = true;
+    searching = true;
     
-    try {
-        const data = await searchMovies(currentSearchTerm, currentPage);
-        
-        if (isNewSearch) {
-            totalResults = data.total_results || 0;
-            totalPages = data.total_pages || 1;
-        }
-        
-        displayResults(data.results || [], isNewSearch);
-        
-    } catch (error) {
-        showError("Erreur lors de la recherche");
-    }
+    const movies = await findMovies(currentSearch, pageNumber);
     
-    isLoading = false;
+    showResults(movies, isNewSearch);
+    
+    searching = false;
 }
 
 searchInput.addEventListener('input', function() {
-    currentSearchTerm = this.value.trim();
+    currentSearch = this.value.trim();
     
-    if (currentSearchTerm.length > 0) {
-        clearBtn.style.display = 'flex';
-    } else {
-        clearBtn.style.display = 'none';
-        showInitialState();
+    clearBtn.style.display = currentSearch ? 'block' : 'none';
+    
+    if (!currentSearch) {
+        showStart();
         return;
     }
     
-    if (searchTimeout) {
-        clearTimeout(searchTimeout);
+    if (timer) {
+        clearTimeout(timer);
     }
     
-    searchTimeout = setTimeout(() => {
-        performSearch(true);
+    timer = setTimeout(() => {
+        doSearch(true);
     }, 500);
 });
 
 searchInput.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
-        if (searchTimeout) {
-            clearTimeout(searchTimeout);
+        if (timer) {
+            clearTimeout(timer);
         }
-        performSearch(true);
+        doSearch(true);
     }
 });
 
 clearBtn.addEventListener('click', function() {
     searchInput.value = '';
-    currentSearchTerm = '';
+    currentSearch = '';
     clearBtn.style.display = 'none';
-    showInitialState();
+    showStart();
 });
 
-btnLoadMore.addEventListener('click', async function() {
-    if (isLoading || currentPage >= totalPages) return;
+loadMoreBtn.addEventListener('click', async function() {
+    if (searching) return;
     
-    btnLoadMore.disabled = true;
-    btnLoadMore.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Chargement...';
+    loadMoreBtn.disabled = true;
+    loadMoreBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Chargement...';
     
-    currentPage++;
-    await performSearch(false);
+    pageNumber++;
+    await doSearch(false);
     
-    btnLoadMore.disabled = false;
-    btnLoadMore.innerHTML = '<i class="fas fa-plus"></i> Charger plus de résultats';
+    loadMoreBtn.disabled = false;
+    loadMoreBtn.innerHTML = '<i class="fas fa-plus"></i> Charger plus de résultats';
 });
 
 window.onload = function() {
-    console.log("Page de recherche CinemaTor");
-    showInitialState();
-    
+    showStart();
     searchInput.focus();
 };
