@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CinemaTor - Détails du film</title>
+    <link rel="stylesheet" href="CSS/movie.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <a href="index.html" class="nav-btn">
+            <i class="fas fa-home"></i> Accueil
+        </a>
+        <a href="search.html" class="nav-btn">
+            <i class="fas fa-search"></i> Recherche
+        </a>
+    </nav>
+
+    <main>
+        <section class="movie-hero" id="movie-hero">
+            <div class="hero-backdrop"></div>
+            <div class="hero-content">
+                <div class="movie-poster-container">
+                    <img id="movie-poster" src="" alt="Poster du film" class="movie-poster">
+                </div>
+                <div class="movie-info">
+                    <h1 id="movie-title">Chargement...</h1>
+                    <div class="movie-meta">
+                        <span id="movie-year"></span>
+                        <span id="movie-runtime"></span>
+                        <span id="movie-rating"></span>
+                    </div>
+                    <div class="movie-genres" id="movie-genres"></div>
+                    <div class="movie-actions">
+                        <a href="index.html" class="btn-back">
+                            <i class="fas fa-arrow-left"></i> Retour aux films
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="movie-details">
+            <div class="container">
+                <div class="detail-section">
+                    <h2><i class="fas fa-book-open"></i> Synopsis</h2>
+                    <p id="movie-overview" class="movie-overview">Chargement du synopsis...</p>
+                </div>
+
+                <div class="detail-section">
+                    <h2><i class="fas fa-info-circle"></i> Informations</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <div>
+                                <strong>Date de sortie</strong>
+                                <p id="movie-release-date"></p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <strong>Durée</strong>
+                                <p id="movie-duration"></p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-ticket-alt"></i>
+                            <div>
+                                <strong>Statut</strong>
+                                <p id="movie-status"></p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-language"></i>
+                            <div>
+                                <strong>Langue originale</strong>
+                                <p id="movie-language"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h2><i class="fas fa-users"></i> Casting</h2>
+                    <div class="cast-grid" id="movie-cast">
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h2><i class="fas fa-star"></i> Notes & Récompenses</h2>
+                    <div class="ratings-grid">
+                        <div class="rating-card">
+                            <i class="fas fa-star"></i>
+                            <h3>Note moyenne</h3>
+                            <p id="movie-vote-average"></p>
+                        </div>
+                        <div class="rating-card">
+                            <i class="fas fa-thumbs-up"></i>
+                            <h3>Nombre de votes</h3>
+                            <p id="movie-vote-count"></p>
+                        </div>
+                        <div class="rating-card">
+                            <i class="fas fa-trophy"></i>
+                            <h3>Popularité</h3>
+                            <p id="movie-popularity"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section" id="dvd-section" style="display: none;">
+                    <h2><i class="fas fa-compact-disc"></i> Sortie DVD/Blu-ray</h2>
+                    <div class="dvd-info">
+                        <p id="movie-dvd-date">Date non disponible</p>
+                        <p class="dvd-note"><i class="fas fa-info-circle"></i> Date de sortie en format physique</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
+                <a href="search.html"><i class="fas fa-search"></i> Recherche</a>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 CinemaTor - Détails du film</p>
+                <p class="tmdb-credit">
+                    <i class="fas fa-database"></i> Données fournies par The Movie Database
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="JS/movie.js"></script>
+</body>
+</html>
