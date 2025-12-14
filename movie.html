@@ -5,12 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CinemaTor - Détails du film</title>
     <link rel="stylesheet" href="CSS/movie.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="top-nav">
-        <a href="index.html" class="nav-btn">Accueil</a>
-        <a href="search.html" class="nav-btn">Recherche</a>
-    </div>
+    <header>
+        <div class="header-container">
+            <h1><a href="index.html">Cinema<span>Tor</span></a></h1>
+            <nav>
+                <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
+                <a href="search.html"><i class="fas fa-search"></i> Recherche</a>
+            </nav>
+        </div>
+    </header>
 
     <main>
         <div class="movie-header">
@@ -25,60 +31,62 @@
                     <span id="movie-rating"></span>
                 </div>
                 <div class="movie-genres" id="movie-genres"></div>
-                <a href="index.html" class="back-btn">Retour aux films</a>
+                <a href="index.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Retour aux films
+                </a>
             </div>
         </div>
 
         <div class="movie-content">
             <div class="content-box">
-                <h2>Synopsis</h2>
+                <h2><i class="fas fa-book-open"></i> Synopsis</h2>
                 <p id="movie-overview" class="movie-summary">Chargement du synopsis...</p>
             </div>
 
             <div class="content-box">
-                <h2>Informations</h2>
+                <h2><i class="fas fa-info-circle"></i> Informations</h2>
                 <div class="info-list">
                     <div class="info-line">
-                        <strong>Date de sortie:</strong>
-                        <span id="movie-release-date"></span>
+                        <strong>Date de sortie</strong>
+                        <span id="movie-release-date">Chargement...</span>
                     </div>
                     <div class="info-line">
-                        <strong>Durée:</strong>
-                        <span id="movie-duration"></span>
+                        <strong>Durée</strong>
+                        <span id="movie-duration">Chargement...</span>
                     </div>
                     <div class="info-line">
-                        <strong>Statut:</strong>
-                        <span id="movie-status"></span>
+                        <strong>Statut</strong>
+                        <span id="movie-status">Chargement...</span>
                     </div>
                     <div class="info-line">
-                        <strong>Langue:</strong>
-                        <span id="movie-language"></span>
+                        <strong>Langue originale</strong>
+                        <span id="movie-language">Chargement...</span>
                     </div>
                 </div>
             </div>
 
             <div class="content-box">
-                <h2>Casting</h2>
+                <h2><i class="fas fa-users"></i> Distribution</h2>
                 <div class="cast-list" id="movie-cast">
                 </div>
             </div>
 
             <div class="content-box">
-                <h2>Notes</h2>
+                <h2><i class="fas fa-star"></i> Notes</h2>
                 <div class="notes-box">
                     <div class="note-item">
                         <h3>Note moyenne</h3>
-                        <p id="movie-vote-average"></p>
+                        <p id="movie-vote-average">-</p>
                     </div>
                     <div class="note-item">
                         <h3>Nombre de votes</h3>
-                        <p id="movie-vote-count"></p>
+                        <p id="movie-vote-count">0</p>
                     </div>
                 </div>
             </div>
 
             <div class="content-box" id="dvd-section" style="display: none;">
-                <h2>Sortie DVD</h2>
+                <h2><i class="fas fa-compact-disc"></i> Sortie DVD/Blu-ray</h2>
                 <div class="dvd-box">
                     <p id="movie-dvd-date">Date non disponible</p>
                     <p class="small-text">Date de sortie en format physique</p>
@@ -89,10 +97,10 @@
 
     <footer>
         <div class="footer-links">
-            <a href="index.html">Accueil</a>
-            <a href="search.html">Recherche</a>
+            <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
+            <a href="search.html"><i class="fas fa-search"></i> Recherche</a>
         </div>
-        <p>CinemaTor - Détails du film</p>
+        <p>© 2025 CinemaTor - Détails du film</p>
     </footer>
 
     <script src="JS/movie.js"></script>
