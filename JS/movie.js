@@ -8,45 +8,44 @@ async function getMovie() {
         return;
     }
     
+    const cacheKey = `movie_${movieId}`;
+    const cached = Cache.get(cacheKey); 
+    
+    if (cached) {
+        
+        showMovie(cached.movie, cached.credits);
+        return;
+    }
+    
     try {
-       
         const [movieRes, creditsRes] = await Promise.all([
-            fetch(`https://api.themoviedb.org/3/movie/${movieId}?language=fr-FR`, {
-                headers: { 'Authorization': `Bearer ${TOKEN}` }
-            }),
-            fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?language=fr-FR`, {
-                headers: { 'Authorization': `Bearer ${TOKEN}` }
-            })
+            fetch(`https://api.themoviedb.org/3/movie/${movieId}?language=fr-FR`, { headers: { 'Authorization': `Bearer ${TOKEN}` } }),
+            fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?language=fr-FR`, { headers: { 'Authorization': `Bearer ${TOKEN}` } })
         ]);
         
         const movie = await movieRes.json();
         const credits = await creditsRes.json();
         
+        
+        Cache.set(cacheKey, { movie, credits });
         showMovie(movie, credits);
         
-    } catch (error) {
-        showError();
+    } catch {
+        showError('Erreur de chargement');
     }
 }
 
 function showMovie(movie, credits) {
+    document.getElementById('movie-title').textContent = movie.title || 'Titre inconnu';
+    document.title = (movie.title || 'Film') + ' - CinemaTor';
     
-    document.getElementById('movie-title').textContent = movie.title;
-    document.title = movie.title + ' - CinemaTor';
+    const poster = document.getElementById('movie-poster');
+    poster.src = movie.poster_path ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path : 'https://via.placeholder.com/500x750/333/fff?text=Poster';
     
+    document.getElementById('movie-overview').textContent = movie.overview || 'Pas de synopsis disponible.';
     
-    if (movie.poster_path) {
-        document.getElementById('movie-poster').src = 'https://image.tmdb.org/t/p/w500' + movie.poster_path;
-    }
-    
-    
-    document.getElementById('movie-overview').textContent = movie.overview || 'Pas de synopsis';
-    
-    
-    if (movie.release_date) {
-        const year = movie.release_date.substring(0, 4);
-        document.getElementById('movie-year').textContent = year;
-    }
+    const year = movie.release_date ? movie.release_date.substring(0, 4) : 'N/A';
+    document.getElementById('movie-year').textContent = year;
     
     if (movie.runtime) {
         const hours = Math.floor(movie.runtime / 60);
@@ -59,32 +58,31 @@ function showMovie(movie, credits) {
     if (movie.vote_average) {
         document.getElementById('movie-rating').textContent = movie.vote_average.toFixed(1) + '/10';
         document.getElementById('movie-vote-average').textContent = movie.vote_average.toFixed(1) + '/10';
-        document.getElementById('movie-vote-count').textContent = movie.vote_count + ' votes';
+        document.getElementById('movie-vote-count').textContent = (movie.vote_count || 0) + ' votes';
     }
-    
     
     if (movie.release_date) {
         const date = new Date(movie.release_date);
         document.getElementById('movie-release-date').textContent = date.toLocaleDateString('fr-FR');
     }
     
-    
     document.getElementById('movie-status').textContent = movie.status || 'Inconnu';
     document.getElementById('movie-language').textContent = movie.original_language || 'N/A';
     
-    
     const genresDiv = document.getElementById('movie-genres');
     genresDiv.innerHTML = '';
-    if (movie.genres) {
+    if (movie.genres?.length) {
         movie.genres.forEach(genre => {
             const tag = document.createElement('span');
             tag.className = 'genre-tag';
             tag.textContent = genre.name;
             genresDiv.appendChild(tag);
         });
+    } else {
+        genresDiv.innerHTML = '<span class="genre-tag">Non spécifié</span>';
     }
     
-    
+    const dvdSection = document.getElementById('dvd-section');
     if (movie.release_dates?.results) {
         const frRelease = movie.release_dates.results.find(r => r.iso_3166_1 === 'FR');
         if (frRelease?.release_dates) {
@@ -92,40 +90,41 @@ function showMovie(movie, credits) {
             if (dvdRelease?.release_date) {
                 const dvdDate = new Date(dvdRelease.release_date);
                 document.getElementById('movie-dvd-date').textContent = dvdDate.toLocaleDateString('fr-FR');
-                document.getElementById('dvd-section').style.display = 'block';
+                dvdSection.style.display = 'block';
+                return;
             }
         }
     }
-    
+    dvdSection.style.display = 'none';
     
     const castDiv = document.getElementById('movie-cast');
     castDiv.innerHTML = '';
-    if (credits.cast) {
+    if (credits.cast?.length) {
         credits.cast.slice(0, 8).forEach(actor => {
-            const actorDiv = document.createElement('div');
-            actorDiv.className = 'cast-item';
-            actorDiv.innerHTML = `
-                <img class="cast-photo" alt="${actor.name}" 
-                     src="${actor.profile_path ? 'https://image.tmdb.org/t/p/w200' + actor.profile_path : 'https://via.placeholder.com/150x200/333/fff?text=Photo'}">
-                <div class="cast-info">
-                    <div class="cast-name">${actor.name}</div>
-                    <div class="cast-role">${actor.character || 'Rôle inconnu'}</div>
+            castDiv.innerHTML += `
+                <div class="cast-item">
+                    <img class="cast-photo" alt="${actor.name}" 
+                         src="${actor.profile_path ? 'https://image.tmdb.org/t/p/w200' + actor.profile_path : 'https://via.placeholder.com/150x200/333/fff?text=Photo'}">
+                    <div class="cast-info">
+                        <div class="cast-name">${actor.name}</div>
+                        <div class="cast-role">${actor.character || 'Rôle inconnu'}</div>
+                    </div>
                 </div>
             `;
-            castDiv.appendChild(actorDiv);
         });
+    } else {
+        castDiv.innerHTML = '<div style="text-align:center; padding:30px; color:#aaa;">Casting non disponible</div>';
     }
 }
 
-function showError(msg) {
+function showError(message) {
     document.querySelector('main').innerHTML = `
         <div style="text-align:center; padding:50px;">
-            <h2>Erreur</h2>
-            <p>${msg || 'Impossible de charger le film'}</p>
-            <a href="index.html" class="back-btn">Retour à l'accueil</a>
+            <h2 style="color:#e50914;">Erreur</h2>
+            <p>${message}</p>
+            <a href="index.html" class="back-btn">Accueil</a>
         </div>
     `;
 }
 
-// Charger directement
-getMovie();
+window.onload = getMovie;
