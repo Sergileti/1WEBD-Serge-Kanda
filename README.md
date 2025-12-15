@@ -9,7 +9,7 @@ Installation
 ÉTAPE OBLIGATOIRE : Configuration API
 
 1. Ouvrez le fichier `secrets.js`
-2. Remplacez 'TON_TOKEN_ICI' par VOTRE token TMDB
+2. Remplacez 'TON_TOKEN_API_ICI' par VOTRE token TMDB
 3. (Obtenez un token gratuit sur themoviedb.org)
 
 ÉTAPE 2 : Lancer l'application
