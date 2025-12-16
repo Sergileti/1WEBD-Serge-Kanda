@@ -3,12 +3,12 @@ const Cache = {
     get(k) {
         try {
             const item = JSON.parse(localStorage.getItem(k));
-            return item && Date.now() - item.t < this.dur ? item.d : null; // item.d contient {movie, credits}
+            return item && Date.now() - item.t < this.dur ? item.d : null;
         } catch { return null; }
     },
     set(k, d) {
         try {
-            localStorage.setItem(k, JSON.stringify({ d, t: Date.now() })); // d = {movie, credits}
+            localStorage.setItem(k, JSON.stringify({ d, t: Date.now() }));
         } catch {}
     },
     clean() {
