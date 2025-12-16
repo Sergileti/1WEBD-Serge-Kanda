@@ -21,3 +21,9 @@ NOTE TECHNIQUE :
 - secrets.js contient la configuration API
 - Chaque utilisateur utilise son propre token
 - Architecture modulaire et sécurisée
+- Attention : Cette méthode expose votre token API dans le navigateur
+
+Prochaines améliorations :
+- Backend Node.js/Express - Pour masquer le token API
+- Variables d'environnement - Stockage sécurisé des clés
+- Rate limiting - Protection contre les abus
